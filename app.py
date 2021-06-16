@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-# from flask.helpers import send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import json
