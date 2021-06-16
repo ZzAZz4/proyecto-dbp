@@ -1,19 +1,21 @@
-from sqlalchemy import create_engine
+import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import DeclarativeMeta
 import json
 
+DB_URI = 'postgresql://postgres:253768491@127.0.0.1:5432/proyectodbp'
+
 class Manager:
     Base = declarative_base()
     session = None
 
-    def createEngine(self):
-        engine = create_engine('postgresql://postgres:1234567@127.0.0.1:5432/proyectodbp')
+    def create_engine(self):
+        engine = sqlalchemy.create_engine(DB_URI)
         self.Base.metadata.create_all(engine)
         return engine
 
-    def getSession(self, engine):
+    def get_session(self, engine):
         if self.session == None:
             Session = sessionmaker(bind=engine)
             session = Session()
