@@ -1,0 +1,2 @@
+SQLALCHEMY_DATABASE_URI = 'postgresql://esteb:253768491@localhost:5432/proyectodbp'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
