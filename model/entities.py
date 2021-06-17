@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, Float, String, Sequence, DateTime, ForeignKey, Table
+from sqlalchemy import Column, Integer, Float, String, Sequence, DateTime, ForeignKey, Table, Text, Boolean
 from sqlalchemy.orm import relationship
 from database import connector
+from flask_user import current_user, login_required, roles_required, UserManager, UserMixin
 
 Base = connector.Manager.Base
 
@@ -10,12 +11,20 @@ class Usuario(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(255), nullable=False)
     username = Column(String(255), nullable=False)
-    password = Column(String(255), nullable=False)
+    hash = Column(Text, nullable=False)
 
     # One to many relationship with Compra
     compras = relationship('Compra', back_populates='usuario', lazy=True)
 
-    
+
+class Admin(Base):
+    __tablename__ = 'admins'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String(255), nullable=False)
+    username = Column(String(255), nullable=False)
+    hash = Column(Text, nullable=False)
+
+
 class Categoria(Base):
     __tablename__ = 'categoria'
 
@@ -23,7 +32,8 @@ class Categoria(Base):
     nombre = Column(String(255), nullable=False)
 
     # One to many relationship with Subcategoria
-    subcategorias = relationship('Subcategoria', back_populates='categoria', lazy=True)
+    subcategorias = relationship(
+        'Subcategoria', back_populates='categoria', lazy=True)
 
 
 # Many to Many between Subcategoria - Producto
@@ -40,12 +50,13 @@ class Subcategoria(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(255), nullable=False)
     categoria_id = Column(Integer, ForeignKey('categoria.id'))
-    
+
     # Many to one relationship with Categoria
     categoria = relationship('Categoria', back_populates='subcategorias')
 
     # For Many to Many relationship with Producto
-    productos = relationship('Producto', secondary=subcategoria_producto, back_populates='subcategorias')
+    productos = relationship(
+        'Producto', secondary=subcategoria_producto, back_populates='subcategorias')
 
 
 # Many to Many between Compra - Producto
@@ -65,11 +76,12 @@ class Producto(Base):
     stock = Column(Integer)
 
     # For Many to Many relationship with Subcategoria
-    subcategorias = relationship('Subcategoria', secondary=subcategoria_producto, back_populates="productos")
+    subcategorias = relationship(
+        'Subcategoria', secondary=subcategoria_producto, back_populates="productos")
 
     # For Many to Many relationship with Compra
-    compras = relationship('Compra', secondary=compra_producto, back_populates="productos")
-
+    compras = relationship(
+        'Compra', secondary=compra_producto, back_populates="productos")
 
 
 class Compra(Base):
@@ -79,13 +91,8 @@ class Compra(Base):
     fecha = Column(DateTime, nullable=False)
 
     # Many to one relationship with Usuario
-    usuario = relationship('Usuario', back_populates = "compras")
+    usuario = relationship('Usuario', back_populates="compras")
 
     # For Many to Many relationship with producto
-    productos = relationship('Producto', secondary=compra_producto, back_populates="compras")
-
-
-
-if __name__ == '__main__':
-    db = connector.Manager()
-    engine = db.createEngine()
+    productos = relationship(
+        'Producto', secondary=compra_producto, back_populates="compras")
