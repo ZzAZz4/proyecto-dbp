@@ -101,7 +101,7 @@ Para hacer uso de la aplicación, se deben seguir los siguientes pasos:
 * Configurar las credenciales para la base de datos que se quiere usar en el archivo `config.py`.
 * Instalar los requerimientos mostrados en el archivo `requirements.txt` dentro de este mismo repositorio.
 * Ejecutar el comando:
-```
-python app.py
-```
+	```
+	python app.py
+	```
 
