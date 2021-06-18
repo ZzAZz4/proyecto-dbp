@@ -59,6 +59,23 @@ Para el desarrollo de Kusa Store se utilizó:
 - MySQL / Postgresql a nivel interno en la creación de las Bases de datos
 ```
 
+## Uso y Deployment
+Para hacer uso de la aplicación, se deben seguir los siguientes pasos:
+
+* Configurar las credenciales para la base de datos que se quiere usar en el archivo `config.py`.
+* Instalar los requerimientos mostrados en el archivo `requirements.txt` dentro de este mismo repositorio.
+* Ejecutar el comando:
+	```
+	python app.py
+	```
+
+### Inicializar registros
+
+Hay registros de prueba que se pueden agregar mediante el script inicializardatabase.py. Solo se debe ejecutar:
+  ```
+  python inicializardatabase.py
+  ```
+
 ## Informacion de la aplicación
 Dentro de las entidades en la aplicación (clases en el código y tablas en la base de datos) tenemos las siguientes:
 ```
@@ -97,13 +114,5 @@ Permite actualizar la información de un producto ya existente si eres un admini
 ### Server error
 Vista para mostrar lo que se muestra cuando ocurre un server error, para evitar matar el servidor. Permite redirigir al usuario al landing page en caso ocurra un evento anormal (e.g., si la conexion al servidor cae).
 
-## Uso y Deployment
-Para hacer uso de la aplicación, se deben seguir los siguientes pasos:
 
-* Configurar las credenciales para la base de datos que se quiere usar en el archivo `config.py`.
-* Instalar los requerimientos mostrados en el archivo `requirements.txt` dentro de este mismo repositorio.
-* Ejecutar el comando:
-	```
-	python app.py
-	```
 
