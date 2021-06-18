@@ -21,6 +21,7 @@ El proyecto permite que existan tres tipos de usuario para la aplicación: admin
   - Puede comprar estos productos.
 * Administrador:
   - Puede hacer CRUD de los productos de manera sencilla, por medio de la interfaz.
+
 ## Objetivos Principales
 ```
 - Venta legal de figuras coleccionables en Perú.
@@ -42,9 +43,8 @@ Para el desarrollo de Kusa Store se utilizó:
 ### FrontEnd
 ```
 - HTML5 y CSS7
-- Bootstrap
+- Bootstrap y UIkit
 - Javascript 
-- UIkit
 ```
 ### BackEnd
 ```
@@ -69,32 +69,34 @@ Dentro de las entidades en la aplicación (clases en el código y tablas en la b
 - Compra: una compra hecha, con atributos como fecha, usuario y productos.
 ```
 Además, existe un endpoint para cada vista de la página:
+
 ### Index
-Es la vista principal de la página. Muestra todos los productos y, dependiendo de si eres un cliente o un administrador, se proveerán opciones para hacer CRUD de los productos.
+Es la vista principal de la página. Muestra todos los productos disponibles. Los clientes de la aplicacion pueden agregar objetos al carrito para comprarlos luego. Los administradores pueden controlar que productos se muestran a los clientes mediante otros métodos.
 
 ### Signup Cliente
-Es un formulario que crea un usuario a partir de los datos del cliente. Revisa si el username ya se encuentra registrado y, si no, lo añade a la base de datos con SQLAlchemy.
+Es un formulario que crea un usuario a partir de los datos del cliente. Revisa si el username ya se encuentra registrado y, si no, lo añade a la base de datos con SQLAlchemy. El url "/signup" implementa una interfaz amigable al usuario, donde se ingresan los parametros necesarios para la creacion de una cuena. 
 
 ### Login Cliente
-Es una vista que permite al usario loggearse. En el caso en el que el usuario ya se encuentre loggeado, este es redirigido a la página principal.
+Es una vista que permite al usario loguearse a su cuenta, si esta existe. El cliente debe ingresar su usuario y contraseña para acceder. En caso el usuario con esas credenciales no exista en la base de datos, se muestra un mensaje de error al usuario pidiendo que se loguee de nuevo. En caso se valide, se crea una sesión persistente para el mismo, por lo que salir y volver a entrar a la página mantendrá su sesion abierta hasta desconectarse.
 
 ### Logout Cliente
+Permite que un usuario logueado se desconecte de la pagina. En caso no hacerlo, entrar a la pagina de nuevo mantendrá abierta su sesión.
 
 ### Single Product
-Es una vista para obtener el detalle de un solo producto. 
-
+Es una vista para obtener el detalle de un solo producto, que se especifica mediante su id en la url query. 
 
 ### Create Product
-Permite crear un producto en la base de datos si eres un administrador.
+Permite crear un producto en la base de datos si eres un administrador. Se implementa en el route "/createproduct". Un usuario que sea no autorizado o que solo tenga nivel de cliente no es permitido de utilizar esta funcionalidad, y será redirigido a la pagina principal de intentarlo. Un administrador puede utilizar la interfaz gráfica para crear un nuevo producto, que requiere llenar los campos necesarios para agregarlo (nombre, precio, descripcion, stock disponible y url de la imagen). El producto agregado podrá ser visto por todos los usuarios en la pagina de compras.
 
 ### Delete Product
-Permite eliminar un producto de la base de datos si eres un administrador.
+Permite eliminar un producto de la base de datos si eres un administrador. Se implementa directamente en el landing page para cualquier administrador. Un administrador puede eliminar un producto clickeando en la x que aparecerá en la parte superior derecha de su nombre. Otros clientes que no sean administradores simplemente no implementan la funcionalidad, y no podrán ver rastro de ella.
 
 ### Update Product
-Permite actualizar la información de un producto ya existente si eres un administrador.
+Permite actualizar la información de un producto ya existente si eres un administrador. Es implementado de forma similar a createproduct, pero solo el nombre del producto es requerido. Cualquier campo vacio no es modificado. Cualquier dato en un campo llenado reemplaza la data en el producto quee tenga como nombre el nombre deseado.
 
 ### Server error
-Vista para mostrar lo que se muestra cuando ocurre un server error.
+Vista para mostrar lo que se muestra cuando ocurre un server error, para evitar matar el servidor. Permite redirigir al usuario al landing page en caso ocurra un evento anormal (e.g., si la conexion al servidor cae).
+
 ## Uso y Deployment
 Para hacer uso de la aplicación, se deben seguir los siguientes pasos:
 
