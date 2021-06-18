@@ -10,23 +10,31 @@
 
 ## Descripción
 
-Kusa store es una aplicación web de tienda online en la que se ofrecen productos relacionados al anime, manga y la cultura otaku en Perú.
+Kusa store es una aplicación web de tienda online en la que se ofrecen productos relacionados al anime, manga y la cultura otaku en Perú. 
 
+El proyecto permite que existan tres tipos de usuario para la aplicación: administrador, cliente registrado y cliente no registrado. Cada uno tiene permisos incrementales dentro de la aplicación.
 
+* Cliente no registrado:
+  - Puede entrar a la pagina y ver los productos.
+* Cliente registrado:
+  - Puede añadir los productos que desea comprar a un carrito de compra.
+  - Puede comprar estos productos.
+* Administrador:
+  - Puede hacer CRUD de los productos de manera sencilla, por medio de la interfaz.
 ## Objetivos Principales
 ```
-- Venta legal de figuras coleccionables en Perú 
-- Importación de artículos desde Japón
-- Impulso de la cultura otaku en Perú y América Latina
+- Venta legal de figuras coleccionables en Perú.
+- Importación de artículos desde Japón.
+- Impulso de la cultura otaku en Perú y América Latina.
 ```
 
 ## Mision
 
-Ser la tienda virtual de  manga, anime, artículos coleccionables más grande y reconocida en Perú 
+Ser la tienda virtual de manga, anime, artículos coleccionables más grande y reconocida en Perú.
 
 ## Vision
 
-Ser referente en la construcción de la cultura otaku en sudámerica.
+Ser referente en la construcción de la cultura otaku en sudámerica. "Una monita china en cada hogar".
 
 ## Tecnologias utilizadas
 
@@ -34,14 +42,17 @@ Para el desarrollo de Kusa Store se utilizó:
 ### FrontEnd
 ```
 - HTML5 y CSS7
+- Bootstrap
 - Javascript 
+- UIkit
 ```
 ### BackEnd
 ```
-- SQLAlchemy para el manejo a alto nivel de los modelos de bases de datos
-- Flask como frameword para la creación rápida de la aplicación web
-- FlaskForms para el manejo de forms en la compra de articulos
-- Flask_login para el manejo y validación de usuarios y su acceso al sistema
+- SQLAlchemy para el manejo a alto nivel de los modelos de bases de datos.
+- Flask como frameword para la creación rápida de la aplicación web.
+- flask_wtf para el manejo de forms en la compra de articulos.
+- Flask_login para el manejo y validación de usuarios y su acceso al sistema.
+- flask_migrate para tener un log de los cambios a la estructura de la base de datos.
 ```
 ### Bases de datos
 ```
@@ -49,6 +60,34 @@ Para el desarrollo de Kusa Store se utilizó:
 ```
 
 ## Informacion de la aplicación
+Dentro de las entidades en la aplicación (clases en el código y tablas en la base de datos) tenemos las siguientes:
+```
+- Usuario: representa a los usuarios registrados en la aplicación.
+- Categoria: es la categoría a la que pertenece un producto.
+- Subcategoría: similar a Categoría.
+- Producto: un producto general disponible, con atributos como nombre, precio, descripcióń, etc.
+- Compra: una compra hecha, con atributos como fecha, usuario y productos.
+```
+Además, existe un endpoint para cada vista de la página:
+### Index
+Es la vista principal de la página. Muestra todos los productos y, dependiendo de si eres un cliente o un administrador, se proveerán opciones para hacer CRUD de los productos.
+
+### Signup Cliente
+
+### Login Cliente
+
+### Logout Cliente
+
+### Single Product
 
 
+### Create Product
+
+### Delete Product
+
+### Update Product
+
+### Server error
 ## Uso y Deployment
+
+

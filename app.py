@@ -268,7 +268,6 @@ def logout():
     flash('You were logged out.')
     return redirect(url_for('.login'))
 
-
 @app.route('/')
 def index():
     allproducts = Producto.query.all()
@@ -276,7 +275,7 @@ def index():
     ifadmin_ = ""
     user = current_user
     if user.is_authenticated:
-        print("USERRR USUARIO")
+        print("USER USUARIO")
         if is_admin(user):
             print("USER ADMIN")
             ifadmin_ = "ADMIN"
