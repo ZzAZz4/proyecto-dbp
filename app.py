@@ -347,26 +347,52 @@ def login():
 # returns a list with the bought products.
 
 
-def aux_buy_product_list(user, product_id_dict):
-    to_buy = [
-        Producto.query.
-        with_for_update(of=Producto).get(id), count for id, count in product_id_dict
-    ]
+def aux_buy_product_list(user, cart):
+    to_buy = [(Producto.query.with_for_update(of=Producto).get(i), count)
+              for i, count in cart]
 
     bought = []
+    fail = []
     for product, count in to_buy:
-        if product.stock > count:
-            product.stock -= count
-            bought.append(product)
+        try:
+            if product.stock > count:
+                product.stock -= count
+                bought.append(product)
+            else:
+                fail.append(product)
+        except IntegrityError:
+            fail.append(product)
 
-    compra = Compra(
-        user_id=user.id,
-        fecha=datetime.now(),
-        productos=bought)
+    if len(bought) > 0:
+        compra = Compra(
+            user_id=user.id,
+            fecha=datetime.now(),
+            productos=bought)
 
-    db.session.add(compra)
-    db.session.commit()
-    return bought
+        db.session.add(compra)
+        db.session.commit()
+    else:
+        db.session.rollback()
+
+    return bought, fail
+
+
+@app.route('/buy', methods=['POST'])
+def buy_cart():
+    user = current_user
+
+    if not is_client(user):
+        return redirect(url_for(".index"), code=400)
+
+    cart = request.json['data']
+    bought, failed = aux_buy_product_list(user, cart)
+    failed_str = ' and '.join((str(product.nombre) for product in failed))
+    success, fail = (
+        'Bought all products successfully',
+        'There were errors while trying to buy: ' + failed_str
+    )
+
+    return success if len(failed) > 0 else fail
 
 
 if __name__ == '__main__':
