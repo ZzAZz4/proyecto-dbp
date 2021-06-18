@@ -1,8 +1,9 @@
-from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, Float, String, Sequence, DateTime, ForeignKey, Table, Text, Boolean
+from sqlalchemy.orm import relationship
+from sqlalchemy.exc import IntegrityError
 
 
-from flask import Flask, render_template, flash, request, redirect, url_for
+from flask import Flask, render_template, flash, request, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -143,44 +144,58 @@ class Compra(Base):
         'Producto', secondary=compra_producto, back_populates="compras")
 
 
+@app.errorhandler(500)
+def serverError(error):
+    return render_template('500.html')
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.filter(Usuario.id == str(user_id)).first()
 
 
-def ifadmin(user):
-    return user.access == ACCESS['admin']
+def is_admin(user):
+    return user is not None and user.access == ACCESS['admin']
 
 
-def ifclient(user):
-    return user.access == ACCESS['client']
+def is_client(user):
+    return user is not None and user.access == ACCESS['client']
 
 
 # only for admins
 # Product Create
 @app.route('/createproduct', methods=['GET', 'POST'])
 def create_product():
-    mensaje = None
     user = current_user
-    if user.is_authenticated:
-        if ifclient(user):
-            return redirect(url_for('.index'))
-        if request.method == 'POST':
-            if ifadmin(user):
-                producto = Producto(
-                    nombre=request.form['nombre'],
-                    precio=request.form['precio'],
-                    descripcion=request.form['descripcion'],
-                    stock=request.form['stock']
-                    # agregar img_url
-                )
-                db.session.add(producto)
-                db.session.commit()
-                mensaje = "Producto agregado"
-                return render_template('agregarproducto.html', mensaje=mensaje)
-        return render_template('agregarproducto.html', mensaje=mensaje)
-    else:
+    if not is_admin(user):
         return redirect(url_for('.index'))
+
+    if request.method == 'GET':
+        return render_template('agregarproducto.html', mensaje=None)
+
+    if request.method != 'POST':
+        abort(500)
+
+    flask_form = CreateProductForm(request.form)
+
+    if not flask_form.validate_on_submit():
+        return redirect(url_for('.index'))
+
+    try:
+        producto = Producto(
+            nombre=request.form['nombre'],
+            precio=request.form['precio'],
+            descripcion=request.form['descripcion'],
+            stock=request.form['stock']
+            # agregar img_url
+        )
+        db.session.add(producto)
+        db.session.commit()
+        return render_template('agregarproducto.html', mensaje='Producto agregado')
+
+    except Exception:
+        db.session.rollback()
+        abort(500)
 
 
 @app.route('/updateproduct', methods=['GET', 'POST'])
@@ -188,13 +203,13 @@ def update_product():
     mensaje = None
     user = current_user
     if user.is_authenticated:
-        if ifclient(user):
+        if is_client(user):
             return redirect(url_for('.index', mensaje=mensaje))
         if request.method == 'POST':
             if request.form['nombre'] == "":
                 mensaje = "Especifique el nombre del producto"
             else:
-                if ifadmin(user):
+                if is_admin(user):
                     name = request.form['nombre']
                     product = Producto.query.filter_by(nombre=name).first()
                     if product is not None:
@@ -221,7 +236,7 @@ def delete_product():
         user = current_user
         mensaje = None
         if user.is_authenticated:
-            if ifadmin(user):
+            if is_admin(user):
                 nombre = request.args['name']
                 producto = Producto.query.filter_by(nombre=nombre).first()
                 if producto is not None:
@@ -262,10 +277,10 @@ def index():
     user = current_user
     if user.is_authenticated:
         print("USERRR USUARIO")
-        if ifadmin(user):
+        if is_admin(user):
             print("USER ADMIN")
             ifadmin_ = "ADMIN"
-        elif ifclient(user):
+        elif is_client(user):
             print("USER CLIENTE")
             ifcliente_ = "CLIENTE"
     else:
