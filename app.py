@@ -14,6 +14,8 @@ from flask_login import current_user
 
 from flask_wtf import CSRFProtect
 
+from datetime import datetime
+
 from forms import *
 
 
@@ -268,6 +270,7 @@ def logout():
     flash('You were logged out.')
     return redirect(url_for('.login'))
 
+
 @app.route('/')
 def index():
     allproducts = Producto.query.all()
@@ -340,6 +343,30 @@ def login():
             else:
                 errormessage = "Contraseña equivocada"
     return render_template('login.html', errormessage=errormessage)
+
+# returns a list with the bought products.
+
+
+def aux_buy_product_list(user, product_id_dict):
+    to_buy = [
+        Producto.query.
+        with_for_update(of=Producto).get(id), count for id, count in product_id_dict
+    ]
+
+    bought = []
+    for product, count in to_buy:
+        if product.stock > count:
+            product.stock -= count
+            bought.append(product)
+
+    compra = Compra(
+        user_id=user.id,
+        fecha=datetime.now(),
+        productos=bought)
+
+    db.session.add(compra)
+    db.session.commit()
+    return bought
 
 
 if __name__ == '__main__':
