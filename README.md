@@ -73,21 +73,35 @@ Además, existe un endpoint para cada vista de la página:
 Es la vista principal de la página. Muestra todos los productos y, dependiendo de si eres un cliente o un administrador, se proveerán opciones para hacer CRUD de los productos.
 
 ### Signup Cliente
+Es un formulario que crea un usuario a partir de los datos del cliente. Revisa si el username ya se encuentra registrado y, si no, lo añade a la base de datos con SQLAlchemy.
 
 ### Login Cliente
+Es una vista que permite al usario loggearse. En el caso en el que el usuario ya se encuentre loggeado, este es redirigido a la página principal.
 
 ### Logout Cliente
 
 ### Single Product
+Es una vista para obtener el detalle de un solo producto. 
 
 
 ### Create Product
+Permite crear un producto en la base de datos si eres un administrador.
 
 ### Delete Product
+Permite eliminar un producto de la base de datos si eres un administrador.
 
 ### Update Product
+Permite actualizar la información de un producto ya existente si eres un administrador.
 
 ### Server error
+Vista para mostrar lo que se muestra cuando ocurre un server error.
 ## Uso y Deployment
+Para hacer uso de la aplicación, se deben seguir los siguientes pasos:
 
+* Configurar las credenciales para la base de datos que se quiere usar en el archivo `config.py`.
+* Instalar los requerimientos mostrados en el archivo `requirements.txt` dentro de este mismo repositorio.
+* Ejecutar el comando:
+```
+python app.py
+```
 
