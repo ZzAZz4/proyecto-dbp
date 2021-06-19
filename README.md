@@ -1,5 +1,7 @@
 # Kusa Store
 
+<img src="/static/images/__tsuchinoko_kemono_friends_drawn_by_hotatetaho__e52d32cb3806d95432ac85ee24cc99db.jpg" width="600" height="500" />
+
 ## Integrantes
 
 ```
@@ -39,33 +41,36 @@ Ser la tienda virtual de manga, anime, artículos coleccionables más grande y r
 
 Ser referente en la construcción de la cultura otaku en sudámerica. "Una monita china en cada hogar".
 
+<img src="https://1.bp.blogspot.com/-NJsDg7IRbqg/V_t6AGrjlUI/AAAAAAAAErg/s-EVW3ZtOFMUfU4vcKBXqL_YBMa7yE5jgCEw/s1600/Stella-no-Mahou-0.jpg" width="300" height="200" />
+
+
 ## Tecnologias utilizadas
 
 Para el desarrollo de Kusa Store se utilizó:
 
 ### FrontEnd
 
-```
-- HTML5 y CSS7
-- Bootstrap y UIkit
-- Javascript
-```
+
+- [HTML5](https://devdocs.io/html/) y [CSS7](https://developer.mozilla.org/es/docs/Web/CSS)
+- [Bootstrap](https://getbootstrap.com/docs/4.1/getting-started/introduction/) y [UIkit](https://getuikit.com/docs/introduction)
+- [Javascript](https://developer.mozilla.org/es/docs/Web/JavaScript)
+
 
 ### BackEnd
 
-```
-- SQLAlchemy para el manejo a alto nivel de los modelos de bases de datos.
-- Flask como frameword para la creación rápida de la aplicación web.
-- flask_wtf para el manejo de forms en la compra de articulos.
-- Flask_login para el manejo y validación de usuarios y su acceso al sistema.
-- flask_migrate para tener un log de los cambios a la estructura de la base de datos.
-```
+
+- [SQLAlchemy](https://www.sqlalchemy.org/) para el manejo a alto nivel de los modelos de bases de datos.
+- [Flask](https://flask-sqlalchemy.palletsprojects.com/en/2.x/) como framework para la creación rápida de la aplicación web.
+- [flask_wtf](https://flask-wtf.readthedocs.io/en/0.15.x/) para el manejo de forms en la compra de articulos.
+- [Flask_login](https://flask-login.readthedocs.io/en/latest/) para el manejo y validación de usuarios y su acceso al sistema.
+- [flask_migrate](https://flask-migrate.readthedocs.io/en/latest/) para tener un log de los cambios a la estructura de la base de datos.
+
 
 ### Bases de datos
 
-```
-- MySQL / Postgresql a nivel interno en la creación de las Bases de datos
-```
+
+- [Postgresql](https://www.postgresql.org/docs/13/) a nivel interno en la creación de las Bases de datos
+
 
 ## Uso y Deployment
 
