@@ -45,11 +45,11 @@ Para el desarrollo de Kusa Store se utilizó:
 
 ### FrontEnd
 
-```
-- HTML5 y CSS7
-- Bootstrap y UIkit
-- Javascript
-```
+
+- [HTML5](https://devdocs.io/html/) y [CSS7](https://developer.mozilla.org/es/docs/Web/CSS)
+- [Bootstrap](https://getbootstrap.com/docs/4.1/getting-started/introduction/) y [UIkit](https://getuikit.com/docs/introduction)
+- [Javascript](https://developer.mozilla.org/es/docs/Web/JavaScript)
+
 
 ### BackEnd
 
@@ -63,9 +63,9 @@ Para el desarrollo de Kusa Store se utilizó:
 
 ### Bases de datos
 
-```
-- Postgresql a nivel interno en la creación de las Bases de datos
-```
+
+- [Postgresql](https://www.postgresql.org/docs/13/) a nivel interno en la creación de las Bases de datos
+
 
 ## Uso y Deployment
 
