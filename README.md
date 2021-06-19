@@ -41,6 +41,9 @@ Ser la tienda virtual de manga, anime, artículos coleccionables más grande y r
 
 Ser referente en la construcción de la cultura otaku en sudámerica. "Una monita china en cada hogar".
 
+<img src="https://1.bp.blogspot.com/-NJsDg7IRbqg/V_t6AGrjlUI/AAAAAAAAErg/s-EVW3ZtOFMUfU4vcKBXqL_YBMa7yE5jgCEw/s1600/Stella-no-Mahou-0.jpg" width="300" height="200" />
+
+
 ## Tecnologias utilizadas
 
 Para el desarrollo de Kusa Store se utilizó:
