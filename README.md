@@ -53,18 +53,18 @@ Para el desarrollo de Kusa Store se utilizó:
 
 ### BackEnd
 
-```
-- SQLAlchemy para el manejo a alto nivel de los modelos de bases de datos.
-- Flask como frameword para la creación rápida de la aplicación web.
+
+- [SQLAlchemy](https://www.sqlalchemy.org/) para el manejo a alto nivel de los modelos de bases de datos.
+- [Flask](https://flask-sqlalchemy.palletsprojects.com/en/2.x/) como framework para la creación rápida de la aplicación web.
 - [flask_wtf](https://flask-wtf.readthedocs.io/en/0.15.x/) para el manejo de forms en la compra de articulos.
-- Flask_login para el manejo y validación de usuarios y su acceso al sistema.
-- flask_migrate para tener un log de los cambios a la estructura de la base de datos.
-```
+- [Flask_login](https://flask-login.readthedocs.io/en/latest/) para el manejo y validación de usuarios y su acceso al sistema.
+- [flask_migrate](https://flask-migrate.readthedocs.io/en/latest/) para tener un log de los cambios a la estructura de la base de datos.
+
 
 ### Bases de datos
 
 ```
-- MySQL / Postgresql a nivel interno en la creación de las Bases de datos
+- Postgresql a nivel interno en la creación de las Bases de datos
 ```
 
 ## Uso y Deployment
