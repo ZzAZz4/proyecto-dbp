@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.exc import IntegrityError
 
 
-from flask import Flask, render_template, flash, request, redirect, url_for, abort
+from flask import Flask, render_template, flash, request, redirect, url_for, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.base import NO_ARG
 from flask_migrate import Migrate
@@ -15,6 +15,8 @@ from flask_login import current_user
 
 from flask_wtf import CSRFProtect
 from datetime import datetime
+
+from sqlalchemy.sql.sqltypes import JSON
 
 from forms import *
 
@@ -367,15 +369,16 @@ def login():
 
 
 def aux_buy_product_list(user, cart):
-    to_buy = [(Producto.query.with_for_update(of=Producto).get(i), count)
-              for i, count in cart]
+    to_buy = [(Producto.query.with_for_update(of=Producto).filter_by(nombre=i).first(), count)
+              for i, count in cart.items()]
 
     bought = []
     fail = []
     for product, count in to_buy:
         try:
-            if product.stock > count:
+            if product.stock >= count:
                 product.stock -= count
+                db.session.commit()
                 bought.append(product)
             else:
                 fail.append(product)
@@ -397,13 +400,15 @@ def aux_buy_product_list(user, cart):
 
 
 @app.route('/buy', methods=['POST'])
+@csrf.exempt
 def buy_cart():
     user = current_user
 
     if not is_client(user):
         return redirect(url_for(".index"), code=400)
 
-    cart = request.json['data']
+    cart = request.get_json()
+
     bought, failed = aux_buy_product_list(user, cart)
     failed_str = ' and '.join((str(product.nombre) for product in failed))
     success, fail = (
@@ -411,7 +416,7 @@ def buy_cart():
         'There were errors while trying to buy: ' + failed_str
     )
 
-    return success if len(failed) == 0 else fail
+    return jsonify(data=success if len(failed) == 0 else fail)
 
 
 if __name__ == '__main__':

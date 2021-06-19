@@ -1,9 +1,8 @@
-
-function actualizar(){
+function actualizar() {
     console.log("aaaaaaaaaaaaaaaa")
     let lista_li = document.getElementsByClassName("productochecklist")
     console.log(lista_li.length)
-    for(let i = 0 ; i < lista_li.length; i++){
+    for (let i = 0; i < lista_li.length; i++) {
         //let childmenos  = lista_li[i].getElementsByTagName("a")[0]
         //let childmas  = lista_li[i].getElementsByTagName("a")[1]
         //console.log(lista_li[i])
@@ -14,48 +13,48 @@ function actualizar(){
 }
 
 
-function quitar(name){
+function quitar(name) {
     console.log(name)
 }
 
 
-function agregar(name){
+function agregar(name) {
     console.log(name)
 }
 
-function minus(name){
+function minus(name) {
     let a_ = document.createElement("a")
 
-    a_.setAttribute("onclick","quitar("+name+")")
+    a_.setAttribute("onclick", "quitar(" + name + ")")
 
     let span_ = document.createElement("span")
     span_.className = "uk-icon"
-    span_.setAttribute("uk-icon","icon: minus; ratio: 1;")
+    span_.setAttribute("uk-icon", "icon: minus; ratio: 1;")
     a_.appendChild(span_)
-    return  a_
+    return a_
 }
 
-function plus(name){
+function plus(name) {
     let a_ = document.createElement("a")
-    //a_.setAttribute("onclick","agregar("+name+")")
-    //a_.addEventListener("onclick",agregar(name))
-    a_.setAttribute("name","mas")
+        //a_.setAttribute("onclick","agregar("+name+")")
+        //a_.addEventListener("onclick",agregar(name))
+    a_.setAttribute("name", "mas")
     console.log(name)
 
 
-    a_.setAttribute("onclick","agregar("+name+")")
+    a_.setAttribute("onclick", "agregar(" + name + ")")
     let span_ = document.createElement("span")
     span_.className = "uk-icon"
-    span_.setAttribute("uk-icon","icon: plus; ratio: 1;")
+    span_.setAttribute("uk-icon", "icon: plus; ratio: 1;")
     a_.appendChild(span_)
-    return  a_
+    return a_
 }
 
 window.onload = function() {
     let products = localStorage.getItem('products')
-    if (products != undefined){
+    if (products != undefined) {
         let productlist = JSON.parse(products)
-        for(let i = 0 ; i < productlist.length; i++){
+        for (let i = 0; i < productlist.length; i++) {
             let div_carrito = document.getElementById('carrito')
             let li_ = document.createElement("li")
             let badge = document.createElement("span")
@@ -63,18 +62,18 @@ window.onload = function() {
             badge.textContent = productlist[i]
             badge.style = "font-size: 90%;"
             li_.appendChild(badge)
-            //li_.setAttribute("value","productochecklist")
-            //li_.className = "productochecklist"
-            li_.setAttribute ("class","productochecklist")
-            li_.setAttribute("data-producto",productlist[i])
-            //li_.appendChild(minus(productlist[i]))
-            //li_.appendChild(plus(productlist[i]))
+                //li_.setAttribute("value","productochecklist")
+                //li_.className = "productochecklist"
+            li_.setAttribute("class", "productochecklist")
+            li_.setAttribute("data-producto", productlist[i])
+                //li_.appendChild(minus(productlist[i]))
+                //li_.appendChild(plus(productlist[i]))
             div_carrito.appendChild(li_)
         }
     }
 }
 
-function updatecarrito(newelement){
+function updatecarrito(newelement) {
     let div_carrito = document.getElementById('carrito')
     let li_ = document.createElement("li")
     let badge = document.createElement("span")
@@ -88,71 +87,70 @@ function updatecarrito(newelement){
     //li_.appendChild(plus(newelement))
     div_carrito.appendChild(li_)
     li_.appendChild(badge)
-    li_.setAttribute("class","productochecklist")    
+    li_.setAttribute("class", "productochecklist")
     actualizar()
 }
 
-function addtocart(item){
+function addtocart(item) {
     let products = localStorage.getItem('products')
-    if (products != undefined){
+    if (products != undefined) {
         let productlist = JSON.parse(products)
-        if (productlist.indexOf(item) === -1){
+        if (productlist.indexOf(item) === -1) {
             console.log(item)
             productlist.push(item)
-        }
-        else{
+        } else {
             console.log("This item already exists");
         }
-     
-        localStorage.setItem('products',JSON.stringify(productlist))
-        //updatecarrito(item)
-    }else{
+
+        localStorage.setItem('products', JSON.stringify(productlist))
+            //updatecarrito(item)
+    } else {
         let productlist = [item]
         updatecarrito(item)
         console.log(productlist)
-        localStorage.setItem('products',JSON.stringify(productlist))
+        localStorage.setItem('products', JSON.stringify(productlist))
     }
 }
-function logout(){
+
+function logout() {
     localStorage.removeItem('products')
     window.location = '/logout'
 }
 
 
-function comprar(){
+function comprar() {
     let payload_ = {}
     let products = localStorage.getItem('products')
-    if (products != undefined){
+    if (products != undefined) {
         let productlist = JSON.parse(products)
-        for(let i = 0 ; i < productlist.length; i++){
+        for (let i = 0; i < productlist.length; i++) {
             payload_[productlist[i]] = 1
         }
         console.log(payload_)
-    try{
-        $.ajax({
-            url: '/buy',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(payload_),
-            dataType: 'json'
-        }).done(function (response){
-            setTimeout(function(){
+        try {
+            $.ajax({
+                url: '/buy',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload_),
+                dataType: 'json'
+            }).done(function(response) {
+                setTimeout(function() {
+                    UIkit.notification({
+                        message: response.data,
+                        status: 'danger'
+                    })
+                }, 1000)
+            }).fail(function(response) {
                 UIkit.notification({
-                message: response,
-                status: 'danger'
+                    message: response,
+                    status: 'danger'
                 })
-            }, 1000)
-        }).fail(function (response){
-            UIkit.notification({
-                message: response,
-                status: 'danger'
-                })
-        });
-    }catch (exception)
-    {
-        console.log(exception)
-    }
-    }else{
+            });
+        } catch (exception) {
+            console.log(exception)
+        }
+    } else {
 
     }
 
