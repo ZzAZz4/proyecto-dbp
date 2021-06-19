@@ -56,7 +56,7 @@ Para el desarrollo de Kusa Store se utilizó:
 ```
 - SQLAlchemy para el manejo a alto nivel de los modelos de bases de datos.
 - Flask como frameword para la creación rápida de la aplicación web.
-- [https://flask-wtf.readthedocs.io/en/0.15.x/](flask_wtf) para el manejo de forms en la compra de articulos.
+- [flask_wtf](https://flask-wtf.readthedocs.io/en/0.15.x/) para el manejo de forms en la compra de articulos.
 - Flask_login para el manejo y validación de usuarios y su acceso al sistema.
 - flask_migrate para tener un log de los cambios a la estructura de la base de datos.
 ```
