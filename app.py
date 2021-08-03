@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.exc import IntegrityError
 
 
-from flask import Flask, render_template, flash, request, redirect, url_for, abort, jsonify
+from flask import Flask, render_template, flash, request, redirect, url_for, abort, jsonify, Response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.base import NO_ARG
 from flask_migrate import Migrate
@@ -15,8 +15,6 @@ from flask_login import current_user
 
 from flask_wtf import CSRFProtect
 from datetime import datetime
-
-from sqlalchemy.sql.sqltypes import JSON
 
 from forms import *
 
@@ -49,21 +47,30 @@ class Usuario(Base):
     username = Column(String(255), nullable=False, unique=True)
     password = Column(String(255), nullable=False, server_default='')
     access = Column(Integer, nullable=False)
+    balance = Column(Integer, nullable=False)
     compras = relationship('Compra', back_populates='usuario', lazy=True)
 
-    def __init__(self, username, password, access):
+    def __init__(self, username, password, access, balance):
         self.username = username
         self.password = password
         self.access = access
+        self.balance = balance
 
+    @property
     def is_authenticated(self):
         return True
 
+    @property
     def is_active(self):
         return True
 
+    @property
     def is_anonymous(self):
         return False
+
+    @property
+    def is_admin(self):
+        return self.access == ACCESS['admin']
 
     def get_id(self):
         return str(self.id)
@@ -132,6 +139,9 @@ class Producto(Base):
     compras = relationship(
         'Compra', secondary=compra_producto, back_populates="productos")
 
+    def to_json(self):
+        return {k: v for k, v in self.__dict__.items() if k != '_sa_instance_state'}
+
 
 class Compra(Base):
     __tablename__ = 'compra'
@@ -159,11 +169,11 @@ def load_user(user_id):
 
 
 def is_admin(user):
-    return user is not None and user.is_authenticated() and user.access == ACCESS['admin']
+    return user is not None and user.is_authenticated and user.access == ACCESS['admin']
 
 
 def is_client(user):
-    return user is not None and user.is_authenticated() and user.access == ACCESS['client']
+    return user is not None and user.is_authenticated and user.access == ACCESS['client']
 
 
 def mensajeforms(errorforms):
@@ -180,9 +190,6 @@ def mensajeforms(errorforms):
         retorno = retorno + " Url"
     return retorno
 
-# only for admins
-# Product Create
-
 
 @app.route('/createproduct', methods=['GET', 'POST'])
 def create_product():
@@ -190,7 +197,7 @@ def create_product():
     if not user.is_authenticated:
         return redirect(url_for('.index'))
 
-    if not is_admin(user):
+    if not user.is_admin:
         return redirect(url_for('.index'))
 
     if request.method == 'GET':
@@ -294,28 +301,22 @@ def logout():
     return redirect(url_for('.login'))
 
 
+@app.route('/shop')
+def shop():
+    allproducts = Producto.query.all()
+    if not current_user.is_authenticated:
+        return redirect(url_for('.login'))
+
+    return render_template('shop.html', allproducts=allproducts)
+
+
 @app.route('/')
 def index():
-    allproducts = Producto.query.all()
-    ifcliente_ = ""
-    ifadmin_ = ""
     user = current_user
-    if user.is_authenticated:
-        print("USERRR USUARIO")
-        if is_admin(user):
-            print("USER ADMIN")
-            ifadmin_ = "ADMIN"
-        elif is_client(user):
-            print("USER CLIENTE")
-            ifcliente_ = "CLIENTE"
-    else:
-        print(user)
-    return render_template(
-        'shop.html',
-        allproducts=allproducts,
-        ifadmin=ifadmin_,
-        ifcliente=ifcliente_
-    )
+    if not user.is_authenticated:
+        return redirect(url_for('.login'))
+
+    return redirect(url_for('.shop'))
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -332,7 +333,8 @@ def signupcliente():
                 user = Usuario(
                     username=request.form['username'],
                     password=request.form['password'],
-                    access=ACCESS['client']
+                    access=ACCESS['client'],
+                    balance=1000
                 )
                 db.session.add(user)
                 db.session.commit()
@@ -368,29 +370,25 @@ def login():
     return render_template('login.html', errormessage=errormessage)
 
 
-def aux_buy_product_list(user, cart):
-    to_buy = [(Producto.query.with_for_update(of=Producto).filter_by(nombre=i).first(), count)
-              for i, count in cart.items()]
-
+def aux_buy_product_list(user, productjson):
     bought = []
     fail = []
-    for product, count in to_buy:
-        try:
-            if product.stock >= count:
-                product.stock -= count
-                db.session.commit()
-                bought.append(product)
-            else:
-                fail.append(product)
-        except IntegrityError:
-            fail.append(product)
+    producto = Producto.query.filter_by(nombre=productjson.get('producto')).first()
+    try:
+        if producto.stock > 0:
+            producto.stock -= 1
+            bought.append(producto)
+        else:
+            fail.append(producto)
+    except IntegrityError:
+        fail.append(producto)
 
     if len(bought) > 0:
         compra = Compra(
             user_id=user.id,
             fecha=datetime.now(),
             productos=bought)
-
+        user.balance = user.balance - producto.precio
         db.session.add(compra)
         db.session.commit()
     else:
@@ -399,27 +397,93 @@ def aux_buy_product_list(user, cart):
     return bought, fail
 
 
-@app.route('/buy', methods=['POST'])
-@csrf.exempt
-def buy_cart():
-    user = current_user
+def checkifenoughbalance(user, productjson):
+    bought = []
+    fail = []
+    producto = Producto.query.filter_by(nombre=productjson.get('producto')).first()
+    try:
+        if producto.precio < user.balance:
+            bought.append(producto)
+        else:
+            return 'No hay suficiente saldo en su cuenta'
+    except IntegrityError:
+        fail.append(producto)
+    return ''
 
-    if not is_client(user):
-        return redirect(url_for(".index"), code=400)
 
-    cart = request.get_json()
+def aux_buy(user, jsonbuyproduct):
+    messagebalance = checkifenoughbalance(user, jsonbuyproduct)
+    if messagebalance != '':
+        obj = {}
+        obj['message'] = messagebalance
+        return jsonify(obj)
 
-    bought, failed = aux_buy_product_list(user, cart)
+    bought, failed = aux_buy_product_list(user, jsonbuyproduct)
     failed_str = ' and '.join((str(product.nombre) for product in failed))
     success, fail = (
         'Bought all products successfully',
         'There were errors while trying to buy: ' + failed_str
     )
+    message = success if len(failed) == 0 else fail
+    print("message: ", message)
+    obj = {}
+    obj['message'] = message
 
-    return jsonify(data=success if len(failed) == 0 else fail)
+    return jsonify(obj)
+
+@app.route('/buy', methods=['POST'])
+def buyproduct():
+    user = current_user
+    if not is_client(user):
+        return redirect(url_for(".index"), code=400)
+    productjson = request.get_json()
+    return aux_buy(user, productjson)
+
+
+@app.route('/buymobile', methods=['POST'])
+def buyproductmobile():
+    productjson = request.get_json()
+    try: 
+        user = Usuario.query.filter_by(username=productjson.get('username')).first()
+        return aux_buy(user, productjson)
+    except IntegrityError:
+        return Response(
+        "Usario no encontrado",
+        status=400)
+
+
+@app.route('/loginmobile', methods=['POST'])
+def loginmobile():
+    loginpayload = request.get_json()
+    response = {}
+    user = Usuario.query.filter_by(username=loginpayload['username']).first()
+    message = ""
+    if user is None:
+        message = 'No existe el usuario'
+    else:
+        if loginpayload['password'] == user.password:
+            message = "Satisfactorio"
+            response['username'] = user.username
+            response['role'] = user.access
+            response['userid'] = user.id
+        else:
+            message = "Contraseña equivocada"
+    response['message'] = message
+    return jsonify(response)
+
+
+@app.route('/products/get-all', methods=['GET'])
+def get_all():
+    return jsonify([o.to_json() for o in Producto.query.all()])
+
+
+@app.route('/products/get/<id>', methods=['GET'])
+def get_product(id):
+    product = Producto.query.filter(Producto.id == id).first()
+    if product is None:
+        return jsonify({"found": False})
+    return jsonify({"found": True, "product": product.to_json()})
 
 
 if __name__ == '__main__':
-    db.create_all()
-    # setup()
     app.run(host="127.0.0.1", port=8080, debug=True)
