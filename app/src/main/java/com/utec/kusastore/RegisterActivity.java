@@ -25,7 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
     }
 
     public void showMessage(String message) {
@@ -46,23 +46,15 @@ public class RegisterActivity extends AppCompatActivity {
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                "http://10.0.2.2:8080/loginmobile",
+                "http://10.0.2.2:8080/signupmobile",
                 jsonMessage,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
                             showMessage(response.getString("message"));
-                            if(response.getString("message").equals("Satisfactorio")){
-                                try {
-                                    String username = response.getString("username");
-                                    int role = response.getInt("role");
-                                    int userId = response.getInt("userid");
-
-                                    goToLogin();
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                            if(response.getString("message").equals("Registrado correctamente")){
+                                goToLogin();
                             }
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
@@ -83,7 +75,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void goToLogin(){
-
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
 }
