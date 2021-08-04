@@ -4,6 +4,7 @@
 *.pyc
 *.pyo
 env/
+debepe/
 venv/
 .venv/
 env*
@@ -24,4 +25,3 @@ htmlcov/
 .coverage
 .coverage.*
 *,cover
-config.py
