@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">KusaStore</string>
+    <string name="app_name">kusastore</string>
+    <string name="txt_username">Ingrese su usuario</string>
+    <string name="txt_password_hint">Ingrese su contraseña</string>
+    <string name="btn_login_hint">Iniciar Sesion</string>
+    <string name="login">Login</string>
+    <string name="buy">Buy!</string>
+    <string name="lema">Shop a large selection of officially licensed anime figures</string>
+    <string name="pregunta">Ya tienes cuenta? Inica sesion</string>
+    <string name="registrate_ahora">Registrate ahora!</string>
 </resources>
