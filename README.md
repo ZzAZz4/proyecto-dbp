@@ -104,7 +104,8 @@ Dentro de las entidades en la aplicación (clases en el código y tablas en la b
 ```
 
 Estas tablas se relacionaran de la siguiente manera:
-![diagrama](static/images/diagram.png)
+<img src="https://raw.githubusercontent.com/ZzAZz4/proyecto-dbp/c5184a1cd51dcb8e1dce9e69cc60f875279a8389/static/images/diagram.png" width="600" height="500" />
+
 
 Además, existe un endpoint para cada vista de la página:
 
