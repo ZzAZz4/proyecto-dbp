@@ -17,6 +17,7 @@ from flask_wtf import CSRFProtect
 from datetime import datetime
 
 from forms import *
+import hashlib
 
 
 csrf = CSRFProtect()
@@ -120,6 +121,9 @@ compra_producto = Table(
     Column('producto_id', Integer, ForeignKey('producto.id'))
 )
 
+def hash_func(password):
+    return hashlib.sha224(password.encode('UTF-8')).hexdigest()
+
 
 class Producto(Base):
     __tablename__ = 'producto'
@@ -162,19 +166,15 @@ class Compra(Base):
 def serverError(error):
     return render_template('500.html')
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.filter(Usuario.id == str(user_id)).first()
 
-
 def is_admin(user):
     return user is not None and user.is_authenticated and user.access == ACCESS['admin']
 
-
 def is_client(user):
     return user is not None and user.is_authenticated and user.access == ACCESS['client']
-
 
 def mensajeforms(errorforms):
     retorno = ""
@@ -327,9 +327,12 @@ def signupmobile():
     if user_ is not None:
         response['message'] = 'Username ya utilizado'
     else:
+        password = registerinfo.get('password')
+        hashed_password = hash_func(password)
         user = Usuario(
             username=registerinfo.get('username'),
-            password=registerinfo.get('password'),
+            password=hashed_password,
+            #hash the password
             access=ACCESS['client'],
             balance=1000
         )
@@ -350,9 +353,11 @@ def signupcliente():
             if user_ is not None:
                 error = 'Username ya utilizado'
             else:
+                password = request.form['password']
+                hashed_password = hash_func(password)
                 user = Usuario(
                     username=request.form['username'],
-                    password=request.form['password'],
+                    password=hashed_password,
                     access=ACCESS['client'],
                     balance=1000
                 )
@@ -378,11 +383,13 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hashed_password = hash_func(password)
+        print(hashed_password)
         user = Usuario.query.filter_by(username=username).first()
         if user is None:
             errormessage = 'No existe el usuario'
         else:
-            if password == user.password:
+            if hashed_password == user.password:
                 login_user(user)
                 return redirect(url_for('.index'))
             else:
