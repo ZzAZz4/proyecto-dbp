@@ -1,6 +1,6 @@
 # Kusa Store
 
-<img src="/static/images/__tsuchinoko_kemono_friends_drawn_by_hotatetaho__e52d32cb3806d95432ac85ee24cc99db.jpg" width="600" height="500" />
+<img src="https://cdn.donmai.us/sample/e5/2d/__tsuchinoko_kemono_friends_drawn_by_hotatetaho__sample-e52d32cb3806d95432ac85ee24cc99db.jpg" width="600" height="500" />
 
 ## Integrantes
 
