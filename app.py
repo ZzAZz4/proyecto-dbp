@@ -384,7 +384,6 @@ def login():
         username = request.form['username']
         password = request.form['password']
         hashed_password = hash_func(password)
-        print(hashed_password)
         user = Usuario.query.filter_by(username=username).first()
         if user is None:
             errormessage = 'No existe el usuario'
